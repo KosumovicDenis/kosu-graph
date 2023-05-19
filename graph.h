@@ -1,59 +1,68 @@
-#include <cstddef>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
+#pragma once
+
+#include <stdint.h>
 #include <vector>
-#include <fstream>
-#include <string>
 
-#include "list.h"
-
-using namespace std;
-
-namespace graph
+struct Tile
 {
-  typedef int Weight;
+  int32_t x, y;
+};
 
-  struct vertexNode; // da definire nel file graph.cpp
+struct HalfEdge
+{
+  HalfEdge *next_edge;
+  Vertex *vertex_pointer;
+  uint16_t weight;
+};
 
-  typedef vertexNode *Graph; // un grafo e' identificato dal puntatore al primo vertice inserito
+struct Vertex
+{
+  Tile tile;
+  Vertex *next_vertex;
+  HalfEdge *adjacency_list;
+  bool visited;
+};
 
-  const Graph emptyGraph = NULL;
-
-  // createEmptyGraph restituisce il grafo vuoto
-  Graph createEmptyGraph();
-
+class graph
+{
+private:
+  std::vector<Vertex> vertices;
+  std::vector<HalfEdge> edges;
+public:
+  graph();
+  ~graph();
+  
   // Aggiunge nuovo vertice con etichetta la stringa. Fallisce se gia' presente
-  bool addVertex(Tile, Graph &);
-
+  bool addVertex(Tile);
   // Aggiunge nuovo arco tra i due nodi con etichette le due stringe e peso
   // l'intero. Fallisce se non sono presenti tutti e due i nodi o se l'arco
   // tra i due e' gia' presente.
-  bool addEdge(Tile, Tile, Weight, Graph &);
+  bool addEdge(Tile, Tile, uint16_t weight);
+
+  // Rimuove arco tra i due nodi con etichette le due stringe
+  // Fallisce se non sono presenti tutti e due i nodi o se non esiste l'arco
+  // tra i due.
+  bool removeEdge(Tile from, Tile to);
 
   // Restituisce true se il grafo e' vuoto, false altrimenti
-  bool isEmpty(const Graph &);
+  bool isEmpty();
 
   // Ritorna il numero di vertici del grafo
-  int numVertices(const Graph &);
+  int numVertices();
 
   // Ritorna il numero di archi del grafo
-  int numEdges(const Graph &);
+  int numEdges();
 
   // Calcola e ritorna (nel secondo parametro) il grado del nodo.
   // Fallisce se il nodo non esiste
-  bool nodeDegree(Tile, int &, const Graph &);
+  bool nodeDegree(Tile, int &);
 
   // Verifica se due vertici sono adiacenti (ovvero se esiste un arco)
-  bool areAdjacent(Tile, Tile, const Graph &);
+  bool areAdjacent(Tile, Tile);
 
   // Ritorna la lista di adiacenza di un vertice
-  list::List adjacentList(Tile, const Graph &);
+  std::vector<Tile> adjacentList(Tile);
 
   // Calcola, se esiste, un cammino tra due vertici
-  void findPath(Tile, Tile, list::List &, int &, const Graph &g);
-}
-
-/* Funzioni che non caratterizzano il TDD Graph, ma che servono per input/output */
-// tree::Tree readFromFile(string);
-void printGraph(const graph::Graph &);
+  void findPath(Tile, Tile, std::vector<Tile> &, int &);
+};
