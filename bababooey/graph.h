@@ -18,7 +18,7 @@ namespace graph
 
   typedef vertexNode *Graph; // un grafo e' identificato dal puntatore al primo vertice inserito
 
-  const Graph emptyGraph = NULL;
+  const Graph emptyGraph = nullptr;
 
   // createEmptyGraph restituisce il grafo vuoto
   Graph createEmptyGraph();

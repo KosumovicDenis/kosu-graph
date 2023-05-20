@@ -21,7 +21,7 @@ struct graph::vertexNode
 //***********************************************************AUSILIARIE********************************************
 bool isEmptyEdge(halfEdgeVertex *h)
 {
-  return (h == NULL);
+  return (h == nullptr);
 }
 
 Graph getNode(Tile &t, const Graph g)
@@ -33,7 +33,7 @@ Graph getNode(Tile &t, const Graph g)
       return aux;
     aux = aux->NextVertex;
   }
-  return emptyGraph;
+  return nullptr;
 }
 
 bool isVertexIn(Tile t, vertexNode *&ptr, const Graph &g)
@@ -54,7 +54,7 @@ bool isVertexIn(Tile t, vertexNode *&ptr, const Graph &g)
 bool aux_areAdjacent(vertexNode *v1, vertexNode *v2)
 {
   halfEdgeVertex *aux = v1->adjList;
-  while (aux != NULL)
+  while (aux != nullptr)
   {
     if (aux->VertexPtr == v2)
       return true;
@@ -94,7 +94,7 @@ bool graph::addVertex(Tile t, Graph &g)
     return false;
   vertexNode *n = new vertexNode;
   n->tile = t;
-  n->adjList = NULL;
+  n->adjList = nullptr;
   n->visited = false;
   if (isEmpty(g))
   {
@@ -185,8 +185,8 @@ bool graph::nodeDegree(Tile t, int &degree, const Graph &g)
 // Verifica se i due vertici v1 e v2 sono adiacenti (ovvero se esiste un arco)
 bool graph::areAdjacent(Tile v1, Tile v2, const Graph &g)
 {
-  vertexNode *ptr1 = NULL;
-  vertexNode *ptr2 = NULL;
+  vertexNode *ptr1 = nullptr;
+  vertexNode *ptr2 = nullptr;
   if (!isVertexIn(v1, ptr1, g) || !isVertexIn(v2, ptr2, g))
     return false;
   return aux_areAdjacent(ptr1, ptr2);
