@@ -40,23 +40,32 @@ struct Tile
 struct HalfEdge
 {
   HalfEdge *next_edge;
-  Vertex *vertex_pointer;
+  int32_t vertex_index;
   uint16_t weight;
 };
 
 struct Vertex
 {
   Tile tile;
-  Vertex *next_vertex;
   HalfEdge *adjacency_list;
   bool visited;
+  Vertex(Tile t, HalfEdge *adjacency_list, bool visited)
+  {
+    this->tile = t;
+    this->adjacency_list = adjacency_list;
+    this->visited = visited;
+  }
+  Vertex(Tile t)
+  {
+    this->tile = t;
+  }
 };
 
 class graph
 {
 private:
   std::vector<Vertex> graph_;
-  std::vector<HalfEdge> edges;
+  //std::vector<HalfEdge> edges;
 
 public:
   graph();
@@ -95,4 +104,6 @@ public:
 
   // Calcola, se esiste, un cammino tra due vertici
   void FindPath(Tile, Tile, std::vector<Tile> &, int &);
+
+  void PrintGraph();
 };
