@@ -21,8 +21,22 @@ int main(int argc, char const *argv[])
   g.AddEdge(t, t1, 1);
   g.AddEdge(t1, t2, 1);
   g.AddEdge(t2, t3, 1);
-  std::cout << g.NumVertices() << std::endl;
-  std::cout << g.NumEdges() << std::endl;
+  std::cout << "Numero vertici: " << g.NumVertices() << std::endl;
+  std::cout << "Numero angoli: " << g.NumEdges() << std::endl;
+  std::cout << "Sono t e t1 adiacenti: " << g.AreAdjacent(t, t1) << std::endl;
+  std::vector<Tile> adjacency_list = g.GetAdjacencyList(t);
+  std::cout << "Lista di adiacenza di t: " << std::endl;
+  for (int i = 0; i < adjacency_list.size(); i++)
+  {
+    std::cout << adjacency_list.at(i) << std::endl;
+  }
+  std::cout << "--------------" << std::endl;
+  g.PrintGraph();
+  std::cout << "--------------" << std::endl;
+  std::cout << g.RemoveEdge(t, t1) << std::endl;
+  g.PrintGraph();
+  std::cout << "--------------" << std::endl;
+  g.AddEdge(t, t1, 1);
   g.PrintGraph();
   std::vector<Tile> path;
   int len;
@@ -33,6 +47,6 @@ int main(int argc, char const *argv[])
   {
     std::cout << path.at(i) << std::endl;
   }
-  
+
   return 0;
 }

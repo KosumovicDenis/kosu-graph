@@ -34,7 +34,7 @@ bool AuxAreAdjacent(int32_t index_from, int32_t index_to, const std::vector<Vert
   HalfEdge *aux = graph_.at(index_from).adjacency_list;
   while (aux != NULL)
   {
-    if (aux->vertex_index == index_from)
+    if (aux->vertex_index == index_to)
       return true;
     aux = aux->next_edge;
   }
@@ -53,6 +53,20 @@ void AddHalfEdge(int32_t index_from, int32_t index_to, uint16_t weight, std::vec
 void RemoveHalfEdge(int32_t index_from, int32_t index_to, std::vector<Vertex> &graph_)
 {
   /* TODO */
+  for (HalfEdge *edges = graph_.at(index_from).adjacency_list; edges != nullptr; edges = edges->next_edge)
+  {
+    if (edges->vertex_index == index_to)
+    {
+      edges = NULL;
+      graph_.at(index_from).adjacency_list = edges;
+      return;
+    }
+    if (edges->next_edge->vertex_index == index_to)
+    {
+      edges->next_edge = edges->next_edge->next_edge;
+      return;
+    }
+  }
 }
 
 /*******************************************************************************************************/
@@ -124,7 +138,7 @@ int graph::NumEdges()
 // se il nodo non esiste
 bool graph::NodeDegree(Tile t, int &degree)
 {
-  if (GetNode(t) >= 0)
+  if (GetNode(t) < 0)
     return false;
   Vertex vertex = graph_.at(GetNode(t));
   for (HalfEdge *edges = vertex.adjacency_list; edges != nullptr; edges = edges->next_edge)
