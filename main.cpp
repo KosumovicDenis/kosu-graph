@@ -31,6 +31,10 @@ int main(int argc, char const *argv[])
     std::cout << adjacency_list.at(i) << std::endl;
   }
   std::cout << "--------------" << std::endl;
+  g.AddEdge(t, t2, 1);
+  g.PrintGraph();
+  std::cout << "--------------" << std::endl;
+  std::cout << g.RemoveEdge(t, t2) << std::endl;
   g.PrintGraph();
   std::cout << "--------------" << std::endl;
   std::cout << g.RemoveEdge(t, t1) << std::endl;

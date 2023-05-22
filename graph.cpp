@@ -57,13 +57,17 @@ void RemoveHalfEdge(int32_t index_from, int32_t index_to, std::vector<Vertex> &g
   {
     if (edges->vertex_index == index_to)
     {
-      edges = NULL;
+      HalfEdge *temp = edges;
+      edges = edges->next_edge;
       graph_.at(index_from).adjacency_list = edges;
+      delete temp;
       return;
     }
     if (edges->next_edge->vertex_index == index_to)
     {
+      HalfEdge *temp = edges->next_edge;
       edges->next_edge = edges->next_edge->next_edge;
+      delete temp;
       return;
     }
   }
@@ -78,7 +82,7 @@ bool graph::AddVertex(Tile t)
 {
   if (GetNode(t) >= 0)
     return false;
-  Vertex n = Vertex(t, NULL, false);
+  Vertex n = Vertex(t, nullptr, false);
   graph_.push_back(n);
   return true;
 }
