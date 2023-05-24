@@ -109,7 +109,12 @@ int main(int argc, char const *argv[])
   }
   */
   g.PrintGraph();
-  std::cout << "-----------------------------------\n";
+  std::cout << "-- Mappa --\n";
   g.PrintMaze();
+  g.AddVertex({6,4});
+  g.AddEdge({5,4}, {6,4}, 1);
+  std::cout << "-- Mappa --\n";
+  g.PrintMaze();
+
   return 0;
 }

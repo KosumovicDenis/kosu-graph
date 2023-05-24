@@ -257,12 +257,6 @@ void graph::PrintMaze()
     ordered_nodes.insert(ordered_nodes.begin() + temp_index, graph_.at(i).tile);
   }
 
-  for (int16_t i = 0; i < ordered_nodes.size(); i++)
-  {
-    std::cout << ordered_nodes.at(i) << "\n";
-  }
-  
-
   int32_t max_x = ordered_nodes.at(0).x;
   int32_t min_x = ordered_nodes.at(0).x;
   int32_t max_y = ordered_nodes.at(0).y;
@@ -353,11 +347,17 @@ void graph::PrintMaze()
       }
       if (i == 0)
       {
-        std::cout << "+\n";
+        if (GetNode({y, max_x}) != -1 || GetNode({y-1, max_x}) != -1) 
+          std::cout << "+\n";
+        else
+          std::cout << "\n";
       }
       else if (i == 1)
       {
-        std::cout << "|\n";
+        if (GetNode({y, max_x}) != -1)
+          std::cout << "|\n";
+        else
+          std::cout << "\n";
       }
     }
   }
@@ -365,20 +365,13 @@ void graph::PrintMaze()
   {
     if (GetNode({max_y, x}) == -1)
     {
-      if (GetNode({max_y-1, x}) != -1)
+      if (GetNode({max_y, x-1}) == -1)
       {
-        std::cout << "+---";
+        std::cout << "    ";
       }
       else
       {
-        if (GetNode({max_y, x-1}) != -1)
-        {
-          std::cout << "+   ";
-        }
-        else
-        {
-          std::cout << "    ";
-        }
+        std::cout << "+   ";
       }
     }
     else
@@ -386,7 +379,10 @@ void graph::PrintMaze()
       std::cout << "+---";
     }
   }
-  std::cout << "+\n";
+  if (GetNode({max_y, max_x}) != -1) 
+    std::cout << "+\n";
+  else
+    std::cout << "\n";
   std::cout << std::endl;
 }
 
