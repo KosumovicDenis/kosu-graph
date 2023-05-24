@@ -4,10 +4,9 @@ graph::graph()
 {
   graph_.reserve(1000);
 }
-graph::~graph(){}
+graph::~graph() {}
 
-
-int32_t graph::GetNode(Tile &t)
+int32_t graph::GetNode(const Tile &t)
 {
   for (int32_t i = 0; i < graph_.size(); i++)
   {
@@ -19,7 +18,8 @@ int32_t graph::GetNode(Tile &t)
 
 bool IsVertexIn(Tile t, int32_t &index, const std::vector<Vertex> &graph_)
 {
-  for(int32_t i = 0; i < graph_.size(); i++) {
+  for (int32_t i = 0; i < graph_.size(); i++)
+  {
     if (graph_.at(i).tile == t)
     {
       index = i;
@@ -100,9 +100,9 @@ bool graph::AddEdge(Tile from, Tile to, uint16_t weight)
   if (AuxAreAdjacent(index_from, index_to, graph_))
     return false;
   AddHalfEdge(index_from, index_to, weight, graph_);
-  AddHalfEdge(index_to, index_from,  weight, graph_);
+  AddHalfEdge(index_to, index_from, weight, graph_);
   /*
-  */
+   */
   return true;
 }
 
@@ -223,16 +223,214 @@ void graph::PrintGraph()
 {
   for (int32_t i = 0; i < graph_.size(); i++)
   {
-    std::cout << graph_.at(i).tile << " :: ";
+    std::cout << "(" << graph_.at(i).tile << ") |->| ";
     HalfEdge *adjnode = graph_.at(i).adjacency_list;
     while (adjnode != nullptr)
     {
-      std::cout << graph_.at(adjnode->vertex_index).tile << " " << adjnode->weight;
+      std::cout << "(" << graph_.at(adjnode->vertex_index).tile << ")" << " <- Weight: " << adjnode->weight;
       if (adjnode->next_edge == nullptr)
         break;
-      std::cout << " - ";
+      std::cout << " || ";
       adjnode = adjnode->next_edge;
     }
     std::cout << std::endl;
   }
 }
+
+// TODO: Creare un'array ordinato (0,n) e poi (1,n) e così via...
+// Stampare gli elementi presenti nell'array nelle colonne indicate
+void graph::PrintMaze()
+{
+  std::vector<Tile> ordered_nodes;
+  ordered_nodes.reserve(1000);
+  for (int32_t i = 0; i < graph_.size(); i++)
+  {
+    int32_t temp_index = 0;
+    for (int32_t j = 0; j < ordered_nodes.size(); j++)
+    {
+      if (graph_.at(i).tile < ordered_nodes.at(j))
+      {
+        break;
+      }
+      temp_index++;
+    }
+    ordered_nodes.insert(ordered_nodes.begin() + temp_index, graph_.at(i).tile);
+  }
+
+  for (int16_t i = 0; i < ordered_nodes.size(); i++)
+  {
+    std::cout << ordered_nodes.at(i) << "\n";
+  }
+  
+
+  int32_t max_x = ordered_nodes.at(0).x;
+  int32_t min_x = ordered_nodes.at(0).x;
+  int32_t max_y = ordered_nodes.at(0).y;
+  for (int i = 0; i < ordered_nodes.size(); i++)
+  {
+    if (max_x < ordered_nodes.at(i).x)
+      max_x = ordered_nodes.at(i).x;
+    if (min_x > ordered_nodes.at(i).x)
+      min_x = ordered_nodes.at(i).x;
+    if (max_y < ordered_nodes.at(i).y)
+      max_y = ordered_nodes.at(i).y;
+  }
+
+  for (int8_t y = ordered_nodes.at(0).y; y <= max_y; y++)
+  {
+    for (int8_t i = 0; i < 3; i++)
+    {
+      for (int8_t x = min_x; x <= max_x; x++)
+      {
+        if (i == 0)
+        {
+          if (GetNode({y, x}) == -1)
+          {
+            if (GetNode({y-1, x}) != -1)
+            {
+              std::cout << "+---";
+            }
+            else
+            {
+              if (GetNode({y, x-1}) != -1)
+              {
+                std::cout << "+   ";
+              }
+              else
+              {
+                std::cout << "    ";
+              }
+            }
+          }
+          else
+          {
+            if (AreAdjacent({y, x}, {y-1, x}))
+            {
+              if (AreAdjacent({y, x}, {y, x-1}) && AreAdjacent({y, x-1}, {y-1, x-1}) && AreAdjacent({y-1, x-1}, {y-1, x}))
+              {
+                std::cout << " ";
+                std::cout << "   ";
+              }
+              else
+              {
+                std::cout << "+";
+                std::cout << "   ";
+              }
+            }
+            else
+            {
+              std::cout << "+";
+              std::cout << "---";
+            }
+          }
+        }
+        else if (i == 1)
+        {
+          if (GetNode({y, x}) == -1)
+          {
+            if (GetNode({y, x-1}) != -1)
+            {
+              std::cout << "|   ";
+            }
+            else
+            {
+              std::cout << "    ";
+            }
+          }
+          else
+          {
+            if (AreAdjacent({y, x}, {y, x-1}))
+            {
+              std::cout << "    ";
+            }
+            else
+            {
+              std::cout << "|";
+              std::cout << "   ";
+            }
+          }
+        }
+      }
+      if (i == 0)
+      {
+        std::cout << "+\n";
+      }
+      else if (i == 1)
+      {
+        std::cout << "|\n";
+      }
+    }
+  }
+  for (int8_t x = min_x; x <= max_x; x++)
+  {
+    if (GetNode({max_y, x}) == -1)
+    {
+      if (GetNode({max_y-1, x}) != -1)
+      {
+        std::cout << "+---";
+      }
+      else
+      {
+        if (GetNode({max_y, x-1}) != -1)
+        {
+          std::cout << "+   ";
+        }
+        else
+        {
+          std::cout << "    ";
+        }
+      }
+    }
+    else
+    {
+      std::cout << "+---";
+    }
+  }
+  std::cout << "+\n";
+  std::cout << std::endl;
+}
+
+/*
+func (m *Maze) Print(solve bool) string {
+	out := "+"
+	for i := 0; i < m.Width; i++ {
+		out = fmt.Sprintf("%s%s", out, "---+")
+	}
+	out = fmt.Sprintf("%s\n", out)
+	for y := m.Length - 1; y >= 0; y-- {
+		top := "|"
+		bottom := "+"
+		for x := 0; x < m.Width; x++ {
+			body := "   "
+			if m.Solution != nil && solve {
+				if _, ok := m.Solution.path[point{x: x, y: y}]; ok {
+					if x == m.Solution.EntranceX && y == m.Solution.EntranceY {
+						body = color.RGB(205, 0, 0).Sprintf(" o ")
+					} else if x == m.Solution.ExitX && y == m.Solution.ExitY {
+						body = color.RGB(0, 205, 0).Sprintf(" o ")
+					} else {
+						dist := float32(m.GetDistance(x, y)) / float32(m.Solution.MaxDistance)
+						R := math.Max(208*(1-float64(dist))+48, 0)
+						G := math.Max(208*(0.9-1.4*float64(dist))+48, 0)
+						B := math.Max(208*(0.9-1.4*float64(dist))+48, 0)
+						body = color.RGB(uint8(R), uint8(G), uint8(B)).Sprintf(" o ")
+					}
+				}
+			}
+			cell := m.cells[x][y]
+			east := "|"
+			if cell.IsLinkedEast() {
+				east = " "
+			}
+			top = fmt.Sprintf("%s%s%s", top, body, east)
+			south := "---"
+			if cell.IsLinkedSouth() {
+				south = "   "
+			}
+			bottom = fmt.Sprintf("%s%s+", bottom, south)
+		}
+		out = fmt.Sprintf("%s%s\n%s\n", out, top, bottom)
+	}
+	return out
+}
+*/

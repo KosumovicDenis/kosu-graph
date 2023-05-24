@@ -16,17 +16,17 @@ const std::string reset("\033[0m");
 
 struct Tile
 {
-  int32_t x, y;
+  int32_t y, x;
   friend std::ostream &operator<<(std::ostream &os, const Tile &t)
   {
-    return (os << "X : " << t.x << "\tY : " << t.y);
+    return (os << "Y: " << t.y << " - X: " << t.x);
   }
   friend std::istream &operator>>(std::istream &is, Tile &t)
   {
-    LOG("Inserisci x:");
-    is >> t.x;
     LOG("Inserisci y:");
     is >> t.y;
+    LOG("Inserisci x:");
+    is >> t.x;
     return is;
   }
   friend bool operator==(const Tile &a, const Tile &b)
@@ -34,6 +34,28 @@ struct Tile
     if (a.x == b.x && a.y == b.y)
       return true;
     return false;
+  }
+  friend bool operator<(const Tile &a, const Tile &b)
+  {
+    if (a.y == b.y)
+    {
+      return a.x < b.x;
+    }
+    else
+    {
+      return a.y < b.y;
+    }
+  }
+  friend bool operator>(const Tile &a, const Tile &b)
+  {
+    if (a.y == b.y)
+    {
+      return a.x > b.x;
+    }
+    else
+    {
+      return a.y > b.y;
+    }
   }
 };
 
@@ -65,7 +87,7 @@ class graph
 {
 private:
   std::vector<Vertex> graph_;
-  //std::vector<HalfEdge> edges;
+  // std::vector<HalfEdge> edges;
 
 public:
   graph();
@@ -100,10 +122,11 @@ public:
   // Ritorna la lista di adiacenza di un vertice
   std::vector<Tile> GetAdjacencyList(Tile t);
 
-  int32_t GetNode(Tile &t);
+  int32_t GetNode(const Tile &t);
 
   // Calcola, se esiste, un cammino tra due vertici
   void FindPath(Tile, Tile, std::vector<Tile> &, int &);
 
   void PrintGraph();
+  void PrintMaze();
 };
