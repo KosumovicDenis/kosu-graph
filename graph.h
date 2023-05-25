@@ -16,10 +16,10 @@ const std::string reset("\033[0m");
 
 struct Tile
 {
-  int32_t y, x;
+  int32_t y, x, z;
   friend std::ostream &operator<<(std::ostream &os, const Tile &t)
   {
-    return (os << "Y: " << t.y << " - X: " << t.x);
+    return (os << "y: " << t.y << " - x: " << t.x << " - z: " << t.z);
   }
   friend std::istream &operator>>(std::istream &is, Tile &t)
   {
@@ -27,35 +27,47 @@ struct Tile
     is >> t.y;
     LOG("Inserisci x:");
     is >> t.x;
+    LOG("Inserisci z:");
+    is >> t.z;
     return is;
   }
   friend bool operator==(const Tile &a, const Tile &b)
   {
-    if (a.x == b.x && a.y == b.y)
+    if (a.x == b.x && a.y == b.y && a.z == b.z)
       return true;
     return false;
   }
   friend bool operator<(const Tile &a, const Tile &b)
   {
-    if (a.y == b.y)
+    if (a.z == b.z)
     {
-      return a.x < b.x;
+      if (a.y == b.y)
+      {
+        return a.x < b.x;
+      }
+      else
+      {
+        return a.y < b.y;
+      }
     }
-    else
-    {
-      return a.y < b.y;
-    }
+    else 
+      return a.z < b.z;
   }
   friend bool operator>(const Tile &a, const Tile &b)
   {
-    if (a.y == b.y)
+    if (a.z == b.z)
     {
-      return a.x > b.x;
+      if (a.y == b.y)
+      {
+        return a.x > b.x;
+      }
+      else
+      {
+        return a.y > b.y;
+      }
     }
     else
-    {
-      return a.y > b.y;
-    }
+      return a.z > b.z;
   }
 };
 
