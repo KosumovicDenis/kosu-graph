@@ -116,5 +116,19 @@ int main(int argc, char const *argv[])
   std::cout << "-- Mappa --\n";
   g.PrintMaze();
 
+  std::cout << "-- Mappa --\n";
+  g.AddVertex({6,5});
+  g.AddVertex({7,5});
+  g.AddVertex({7,4});
+  g.AddEdge({6,4}, {6,5}, 1);
+  g.AddEdge({6,5}, {7,5}, 1);
+  g.AddEdge({7,5}, {7,4}, 1);
+  g.PrintMaze();
+  g.AddEdge({6,4}, {7,4}, 1);
+  g.RemoveEdge({6,5}, {7,5});
+  g.RemoveEdge({7,4}, {7,5});
+  std::cout << "-- Mappa --\n";
+  g.PrintMaze();
+
   return 0;
 }
