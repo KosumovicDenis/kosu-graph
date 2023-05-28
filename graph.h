@@ -105,39 +105,46 @@ public:
   graph();
   ~graph();
 
-  // Aggiunge nuovo vertice con etichetta la tile. Fallisce se gia' presente
+  // The AddVertex function adds a new vertex (node) to the graph with the given tile.
+  // It checks if the vertex already exists and returns false if it does.
+  // Otherwise, it creates a new Vertex object and adds it to the graph.
   bool AddVertex(Tile);
 
-  // Aggiunge nuovo arco tra i due nodi con etichette le due tile e peso
-  // l'intero. Fallisce se non sono presenti tutti e due i nodi o se l'arco
-  // tra i due e' gia' presente.
+  // The AddEdge function adds an edge between two vertices in the graph.
+  // It checks if both vertices exist, if the edge already exists, and if the source and target vertices are the same. 
+  // If any of these conditions are met, it returns false. Otherwise, it adds two half-edges between the vertices with the specified weight.
   bool AddEdge(Tile, Tile, uint16_t weight);
 
-  // Rimuove arco tra i due nodi con etichette le due tile
-  // Fallisce se non sono presenti tutti e due i nodi o se non esiste l'arco
-  // tra i due.
+  // The RemoveEdge function removes an edge between two vertices in the graph.
+  // It checks if both vertices exist and if the edge exists. If any of these conditions are not met, it returns false.
+  // Otherwise, it removes the corresponding half-edges.
   bool RemoveEdge(Tile from, Tile to);
 
-  // Ritorna il numero di vertici del grafo
+  // The NumVertices function returns the number of vertices in the graph by returning the size of the graph_ vector.
   int NumVertices();
 
-  // Ritorna il numero di archi del grafo
+  // The NumEdges function returns the number of edges in the graph.
+  // It iterates over all vertices and calls the NodeDegree function to count the edges incident to each vertex.
+  // The total count is divided by 2 since each edge is counted twice.
   int NumEdges();
 
-  // Calcola e ritorna (nel secondo parametro) il grado del nodo.
-  // Fallisce se il nodo con etichetta la tilez non esiste
+  // The NodeDegree function calculates the degree of a given vertex (node) in the graph.
+  // It counts the number of adjacent vertices by iterating over the adjacency list of the vertex.
   bool NodeDegree(Tile, int &);
 
-  // Verifica se due vertici sono adiacenti (ovvero se esiste un arco)
+  // The AreAdjacent function checks if two vertices are adjacent (connected by an edge) in the graph. 
+  // It uses the AuxAreAdjacent function to determine adjacency.
   bool AreAdjacent(Tile, Tile);
 
-  // Ritorna la lista di adiacenza di un vertice
+  // The GetAdjacencyList function returns the adjacency list of a vertex as a vector of tiles.
+  // It retrieves the adjacency list of the vertex and converts it to a vector of tiles.
   std::vector<Tile> GetAdjacencyList(Tile t);
 
   int32_t GetNode(const Tile &t);
 
-  // Calcola, se esiste, un cammino tra due vertici
-  void FindPath(Tile, Tile, std::vector<Tile> &, int &);
+  // The FindPathDFS function finds a path between two vertices in the graph, using DFS algorithm.
+  // It calls the FindPathAux function and populates the path vector with the tiles of.
+  void FindPathDFS(Tile, Tile, std::vector<Tile> &, int &);
 
   void PrintGraph();
   void PrintMaze();

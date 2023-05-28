@@ -6,6 +6,8 @@ graph::graph()
 }
 graph::~graph() {}
 
+// The GetNode function searches for a node (vertex) in the graph based on a given tile.
+// It iterates over the graph and returns the index of the node if found, or -1 if not found.
 int32_t graph::GetNode(const Tile &t)
 {
   for (int32_t i = 0; i < graph_.size(); i++)
@@ -16,6 +18,8 @@ int32_t graph::GetNode(const Tile &t)
   return -1;
 }
 
+// The IsVertexIn function is a helper function used by other functions to check if a vertex exists in the graph.
+// It also updates the index parameter if the vertex is found.
 bool IsVertexIn(Tile t, int32_t &index, const std::vector<Vertex> &graph_)
 {
   for (int32_t i = 0; i < graph_.size(); i++)
@@ -29,6 +33,7 @@ bool IsVertexIn(Tile t, int32_t &index, const std::vector<Vertex> &graph_)
   return false;
 }
 
+// The AuxAreAdjacent function checks if two nodes (vertices) are adjacent in the graph by examining their adjacency lists.
 bool AuxAreAdjacent(int32_t index_from, int32_t index_to, const std::vector<Vertex> &graph_)
 {
   HalfEdge *aux = graph_.at(index_from).adjacency_list;
@@ -41,6 +46,8 @@ bool AuxAreAdjacent(int32_t index_from, int32_t index_to, const std::vector<Vert
   return false;
 }
 
+// The AddHalfEdge function adds a half-edge between two nodes in the graph.
+// It creates a new HalfEdge object and adds it to the adjacency list of the source node.
 void AddHalfEdge(int32_t index_from, int32_t index_to, uint16_t weight, std::vector<Vertex> &graph_)
 {
   HalfEdge *e = new HalfEdge;
@@ -50,6 +57,8 @@ void AddHalfEdge(int32_t index_from, int32_t index_to, uint16_t weight, std::vec
   graph_.at(index_from).adjacency_list = e;
 }
 
+// The RemoveHalfEdge function removes a half-edge between two nodes in the graph.
+// It searches for the specified edge and removes it from the adjacency list of the source node.
 void RemoveHalfEdge(int32_t index_from, int32_t index_to, std::vector<Vertex> &graph_)
 {
   /* TODO */
@@ -74,10 +83,9 @@ void RemoveHalfEdge(int32_t index_from, int32_t index_to, std::vector<Vertex> &g
 }
 
 /*******************************************************************************************************/
-// Grafo
+// Graph
 /*******************************************************************************************************/
 
-// Aggiunge nuovo vertice con etichetta la stringa. Fallisce se gia' presente
 bool graph::AddVertex(Tile t)
 {
   if (GetNode(t) >= 0)
@@ -87,8 +95,6 @@ bool graph::AddVertex(Tile t)
   return true;
 }
 
-// Aggiunge un arco di peso "w" tra i nodi con etichetta "f" e "t". Fallisce se esiste gia' l'arco
-// se i nodi non esistono nel grafo e se si tenta di inserire un arco tra un nodo ed esso stesso
 bool graph::AddEdge(Tile from, Tile to, uint16_t weight)
 {
   if (from == to)
@@ -101,8 +107,6 @@ bool graph::AddEdge(Tile from, Tile to, uint16_t weight)
     return false;
   AddHalfEdge(index_from, index_to, weight, graph_);
   AddHalfEdge(index_to, index_from, weight, graph_);
-  /*
-   */
   return true;
 }
 
@@ -121,13 +125,11 @@ bool graph::RemoveEdge(Tile from, Tile to)
   return true;
 }
 
-// Ritorna il numero di vertici del grafo
 int graph::NumVertices()
 {
   return graph_.size();
 }
 
-// Ritorna il numero di archi del grafo
 int graph::NumEdges()
 {
   int tot = 0;
@@ -138,8 +140,6 @@ int graph::NumEdges()
   return (tot / 2);
 }
 
-// Calcola e ritorna (nel secondo parametro) il grado del nodo. Fallisce
-// se il nodo non esiste
 bool graph::NodeDegree(Tile t, int &degree)
 {
   if (GetNode(t) < 0)
@@ -152,7 +152,6 @@ bool graph::NodeDegree(Tile t, int &degree)
   return true;
 }
 
-// Verifica se i due vertici v1 e v2 sono adiacenti (ovvero se esiste un arco)
 bool graph::AreAdjacent(Tile v1, Tile v2)
 {
   int32_t index_from = -1;
@@ -162,7 +161,6 @@ bool graph::AreAdjacent(Tile v1, Tile v2)
   return AuxAreAdjacent(index_from, index_to, graph_);
 }
 
-// Restituisce la lista di adiacenza di un vertice
 std::vector<Tile> graph::GetAdjacencyList(Tile v1)
 {
   std::vector<Tile> tile_vect;
@@ -179,13 +177,8 @@ std::vector<Tile> graph::GetAdjacencyList(Tile v1)
   return tile_vect;
 }
 
-// Ritorna un cammino tra una citta' ed un altra
-// Il cammino da "v1" a "v2" alla fine sara' in "path"
-// e la lunghezza sara' in "len".
-// Si assume che il chiamante fornisca inizialmente un cammino vuoto.
-//
-// La funzione rappresenta una variante della visita DFS
-
+// The FindPathAux function is a helper function used by FindPath to find a path between two vertices in the graph.
+// It performs a depth-first search (DFS) starting from the "from" vertex and backtracks to find the path to the "to" vertex.
 bool FindPathAux(int32_t here, int32_t to, std::vector<Tile> &path, int &len, std::vector<Vertex> &graph_)
 {
   graph_.at(here).visited = true;
@@ -210,7 +203,7 @@ bool FindPathAux(int32_t here, int32_t to, std::vector<Tile> &path, int &len, st
   return false;
 }
 
-void graph::FindPath(Tile v1, Tile v2, std::vector<Tile> &path, int &len)
+void graph::FindPathDFS(Tile v1, Tile v2, std::vector<Tile> &path, int &len)
 {
   int32_t from = GetNode(v1), to = GetNode(v2);
   if (from == to || from == -1 || to == -1)
@@ -240,8 +233,6 @@ void graph::PrintGraph()
   }
 }
 
-// TODO: Creare un'array ordinato (0,n) e poi (1,n) e così via...
-// Stampare gli elementi presenti nell'array nelle colonne indicate
 void graph::PrintMaze()
 {
   std::vector<Tile> ordered_nodes;
