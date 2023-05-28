@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <unordered_map>
+#include <functional>
 
 const std::string red("\033[0;31m");
 const std::string green("\033[0;32m");
@@ -13,6 +16,21 @@ const std::string reset("\033[0m");
 #define LOG_r(x) std::cout << red << x << reset << std::endl;
 #define LOG_g(x) std::cout << green << x << reset << std::endl;
 #define LOG_b(x) std::cout << blue << x << reset << std::endl;
+
+struct PathNode
+{
+  int32_t index;
+  int32_t g_cost;
+  int32_t f_cost;
+  PathNode* parent;
+
+  friend bool operator>(const PathNode& lhs, const PathNode& rhs) {
+    return lhs.g_cost > rhs.g_cost;
+  }
+
+  PathNode() : index(0), g_cost(0), f_cost(0), parent(nullptr) {}
+  PathNode(int32_t i, int32_t g, int32_t f, PathNode* p) : index(i), g_cost(g), f_cost(f), parent(p) {}
+};
 
 struct Tile
 {
@@ -146,6 +164,12 @@ public:
   // It calls the FindPathAux function and populates the path vector with the tiles of.
   void FindPathDFS(Tile, Tile, std::vector<Tile> &, int &);
 
+  void FindPathAStar(const Tile& start, const Tile& goal, std::vector<Tile>& path, int& len);
+
   void PrintGraph();
+
   void PrintMaze();
+
+  void PrintMazePath(std::vector<Tile>& path);
+
 };

@@ -178,37 +178,21 @@ int main(int argc, char const *argv[])
   std::cout << "Numero angoli: " << g.NumEdges() << std::endl;
   std::cout << "Sono {0,0} e {0,1} adiacenti: " << g.AreAdjacent({0,0}, {0,1}) << std::endl;
   std::vector<Tile> adjacency_list = g.GetAdjacencyList({0,0,1});
-  /*
-  std::cout << "Lista di adiacenza di t: " << std::endl;
-  for (int i = 0; i < adjacency_list.size(); i++)
-  {
-    std::cout << adjacency_list.at(i) << std::endl;
-  }
-  std::cout << "--------------" << std::endl;
-  g.AddEdge({0,0}, {0,2}, 1);
+
   g.PrintGraph();
-  std::cout << "--------------" << std::endl;
-  std::cout << g.RemoveEdge({0,0}, {0,2}) << std::endl;
-  g.PrintGraph();
-  std::cout << "--------------" << std::endl;
-  std::cout << g.RemoveEdge({0,0}, {0,1}) << std::endl;
-  g.PrintGraph();
-  std::cout << "--------------" << std::endl;
-  g.AddEdge({0,0}, {0,1}, 1);
-  g.PrintGraph();
+  std::cout << "-- Mappa --\n";
+  g.PrintMaze();
+  std::cout << "-- A* --\n";
   std::vector<Tile> path;
   int len;
-  g.FindPath({0,1}, {0,3}, path, len);
+  g.FindPathAStar({0,1,0}, {2,0,0}, path, len);
   std::cout << "Peso percorso tot: ";
   std::cout << len << std::endl;
+  g.PrintMazePath(path);
   for (int i = 0; i < path.size(); i++)
   {
     std::cout << path.at(i) << std::endl;
   }
-  */
-  g.PrintGraph();
-  std::cout << "-- Mappa --\n";
-  g.PrintMaze();
 
   return 0;
 }
