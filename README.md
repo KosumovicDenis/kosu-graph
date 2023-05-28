@@ -1,3 +1,3 @@
 ## Graph for mapping a maze
 
-Testing graph for mapping a maze while exporing it.
+Testing graph for mapping a maze while exploring it.

@@ -6,6 +6,7 @@ graph g;
 int main(int argc, char const *argv[])
 {
   // First floor
+  g.AddVertex({0,0});
   g.AddVertex({0,1});
   g.AddVertex({0,2});
   g.AddVertex({0,3});
@@ -37,13 +38,14 @@ int main(int argc, char const *argv[])
   g.AddVertex({5,3});
   g.AddVertex({5,4});
   g.AddVertex({5,5});
+  g.AddEdge({0,0}, {0,1}, 1);
   g.AddEdge({0,0}, {1,0}, 1);
+  g.AddEdge({0,1}, {0,2}, 1);
   g.AddEdge({0,1}, {1,1}, 1);
   g.AddEdge({0,2}, {0,3}, 1);
   g.AddEdge({0,2}, {1,2}, 1);
   g.AddEdge({0,3}, {1,3}, 1);
   g.AddEdge({0,5}, {1,5}, 1);
-  g.AddEdge({1,0}, {1,1}, 1);
   g.AddEdge({1,1}, {2,1}, 1);
   g.AddEdge({1,2}, {1,3}, 1);
   g.AddEdge({1,3}, {2,3}, 1);
@@ -122,6 +124,54 @@ int main(int argc, char const *argv[])
   g.AddEdge({3,1,1}, {3,2,1}, 1);
   g.AddEdge({3,2,1}, {3,3,1}, 1);
   g.AddEdge({3,2,0}, {0,0,1}, 1);
+
+  // Third floor
+  g.AddVertex({0,0,-1});
+  g.AddVertex({0,1,-1});
+  g.AddVertex({0,2,-1});
+  g.AddVertex({0,3,-1});
+  g.AddVertex({0,5,-1});
+  g.AddVertex({1,0,-1});
+  g.AddVertex({1,1,-1});
+  g.AddVertex({1,2,-1});
+  g.AddVertex({1,3,-1});
+  g.AddVertex({1,5,-1});
+  g.AddVertex({2,0,-1});
+  g.AddVertex({2,1,-1});
+  g.AddVertex({2,2,-1});
+  g.AddVertex({2,3,-1});
+  g.AddVertex({2,4,-1});
+  g.AddVertex({2,5,-1});
+  g.AddVertex({3,0,-1});
+  g.AddVertex({3,1,-1});
+  g.AddVertex({3,2,-1});
+  g.AddVertex({3,3,-1});
+  g.AddVertex({3,4,-1});
+  g.AddVertex({3,5,-1});
+  g.AddEdge({0,0,-1}, {1,0,-1}, 1);
+  g.AddEdge({0,1,-1}, {1,1,-1}, 1);
+  g.AddEdge({0,2,-1}, {0,3,-1}, 1);
+  g.AddEdge({0,2,-1}, {1,2,-1}, 1);
+  g.AddEdge({0,3,-1}, {1,3,-1}, 1);
+  g.AddEdge({0,5,-1}, {1,5,-1}, 1);
+  g.AddEdge({1,0,-1}, {1,1,-1}, 1);
+  g.AddEdge({1,1,-1}, {2,1,-1}, 1);
+  g.AddEdge({1,2,-1}, {1,3,-1}, 1);
+  g.AddEdge({1,3,-1}, {2,3,-1}, 1);
+  g.AddEdge({1,5,-1}, {2,5,-1}, 1);
+  g.AddEdge({2,0,-1}, {2,1,-1}, 1);
+  g.AddEdge({2,0,-1}, {3,0,-1}, 1);
+  g.AddEdge({2,1,-1}, {2,2,-1}, 1);
+  g.AddEdge({2,1,-1}, {3,1,-1}, 1);
+  g.AddEdge({2,2,-1}, {3,2,-1}, 1);
+  g.AddEdge({2,3,-1}, {2,4,-1}, 1);
+  g.AddEdge({2,4,-1}, {2,5,-1}, 1);
+  g.AddEdge({2,4,-1}, {3,4,-1}, 1);
+  g.AddEdge({2,5,-1}, {3,5,-1}, 1);
+  g.AddEdge({3,0,-1}, {3,1,-1}, 1);
+  g.AddEdge({3,1,-1}, {3,2,-1}, 1);
+  g.AddEdge({3,2,-1}, {3,3,-1}, 1);
+  g.AddEdge({4,4,0}, {2,2,-1}, 1);
 
 
   std::cout << "Numero vertici: " << g.NumVertices() << std::endl;
