@@ -523,7 +523,6 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
 
     if (cur_node == goal)
     {
-      // Costruisci il percorso partendo dal nodo goal e risali all'indietro tramite i predecessori
       Tile current = cur_node;
       while (!(current == start))
       {
@@ -538,7 +537,6 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
 
     closed_nodes.insert(cur_node);
 
-    // Apri tutti i vicini
     for (const auto &neighbor : GetWeightedAdjacencyList(cur_node))
     {
       if (closed_nodes.count(neighbor.first) == 0)
@@ -554,7 +552,6 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
     }
   }
 
-  // Se l'algoritmo arriva qui, significa che non è stato possibile trovare un percorso
   len = -1;
 }
 
@@ -702,7 +699,18 @@ void graph::PrintMazePath(std::vector<Tile> &path)
                   }
                   if (in_path)
                   {
-                    std::cout << "  O ";
+                    if (Tile{y, x, z} == path.at(0))
+                    {
+                      std::cout << "  S ";
+                    }
+                    else if (Tile{y, x, z} == path.at(path.size()-1))
+                    {
+                      std::cout << "  E ";
+                    }
+                    else
+                    {
+                      std::cout << "  O ";
+                    }
                   }
                   else
                   {
@@ -742,7 +750,18 @@ void graph::PrintMazePath(std::vector<Tile> &path)
                   }
                   if (in_path)
                   {
-                    std::cout << "| O ";
+                    if (Tile{y, x, z} == path.at(0))
+                    {
+                      std::cout << "| S ";
+                    }
+                    else if (Tile{y, x, z} == path.at(path.size()-1))
+                    {
+                      std::cout << "| E ";
+                    }
+                    else
+                    {
+                      std::cout << "| O ";
+                    }
                   }
                   else
                   {
