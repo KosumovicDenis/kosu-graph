@@ -102,6 +102,7 @@ int main(int argc, char const *argv[])
   g.AddVertex({3,5,1});
   g.AddEdge({0,0,1}, {1,0,1}, 1);
   g.AddEdge({0,1,1}, {1,1,1}, 1);
+  g.AddEdge({0,1,1}, {0,2,1}, 1);
   g.AddEdge({0,2,1}, {0,3,1}, 1);
   g.AddEdge({0,2,1}, {1,2,1}, 1);
   g.AddEdge({0,3,1}, {1,3,1}, 1);
@@ -150,7 +151,8 @@ int main(int argc, char const *argv[])
   g.AddVertex({3,5,-1});
   g.AddEdge({0,0,-1}, {1,0,-1}, 1);
   g.AddEdge({0,1,-1}, {1,1,-1}, 1);
-  g.AddEdge({0,2,-1}, {0,3,-1}, 1);
+  g.AddEdge({0,1,-1}, {0,2,-1}, 1);
+  g.AddEdge({0,2,-1}, {0,3,-1}, 5);
   g.AddEdge({0,2,-1}, {1,2,-1}, 1);
   g.AddEdge({0,3,-1}, {1,3,-1}, 1);
   g.AddEdge({0,5,-1}, {1,5,-1}, 1);
@@ -185,7 +187,7 @@ int main(int argc, char const *argv[])
   std::cout << "-- A* --\n";
   std::vector<Tile> path;
   int len;
-  g.FindPathAStar({0,1,0}, {2,0,0}, path, len);
+  g.FindPathAStar({3,5,1}, {0,5,-1}, path, len);
   std::cout << "Peso percorso tot: ";
   std::cout << len << std::endl;
   g.PrintMazePath(path);

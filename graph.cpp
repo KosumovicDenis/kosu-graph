@@ -177,6 +177,24 @@ std::vector<Tile> graph::GetAdjacencyList(Tile v1)
   return tile_vect;
 }
 
+std::vector<std::pair <Tile, uint16_t>> graph::GetWeightedAdjacencyList(Tile v1)
+{
+  std::vector<std::pair <Tile, uint16_t>> tile_vect;
+  if (GetNode(v1) != -1)
+  {
+    Vertex aux = graph_.at(GetNode(v1));
+    HalfEdge *edges = aux.adjacency_list;
+    while (edges != nullptr)
+    {
+      tile_vect.push_back(std::pair(graph_.at(edges->vertex_index).tile, edges->weight));
+      edges = edges->next_edge;
+    }
+  }
+  return tile_vect;
+
+}
+
+
 // The FindPathAux function is a helper function used by FindPath to find a path between two vertices in the graph.
 // It performs a depth-first search (DFS) starting from the "from" vertex and backtracks to find the path to the "to" vertex.
 bool FindPathAux(int32_t here, int32_t to, std::vector<Tile> &path, int &len, std::vector<Vertex> &graph_)
@@ -223,7 +241,8 @@ void graph::PrintGraph()
     HalfEdge *adjnode = graph_.at(i).adjacency_list;
     while (adjnode != nullptr)
     {
-      std::cout << "(" << graph_.at(adjnode->vertex_index).tile << ")" << " <- Weight: " << adjnode->weight;
+      std::cout << "(" << graph_.at(adjnode->vertex_index).tile << ")"
+                << " <- Weight: " << adjnode->weight;
       if (adjnode->next_edge == nullptr)
         break;
       std::cout << " || ";
@@ -252,7 +271,7 @@ void graph::PrintMaze()
   }
 
   int32_t min_z = ordered_nodes.at(0).z;
-  int32_t max_z = ordered_nodes.at(ordered_nodes.size()-1).z;
+  int32_t max_z = ordered_nodes.at(ordered_nodes.size() - 1).z;
 
   for (int8_t z = min_z; z <= max_z; z++)
   {
@@ -265,10 +284,10 @@ void graph::PrintMaze()
     {
       if (z == ordered_nodes.at(i).z)
         max_x = ordered_nodes.at(i).x;
-        min_x = ordered_nodes.at(i).x;
-        max_y = ordered_nodes.at(i).y;
-        min_y = ordered_nodes.at(i).y;
-        break;
+      min_x = ordered_nodes.at(i).x;
+      max_y = ordered_nodes.at(i).y;
+      min_y = ordered_nodes.at(i).y;
+      break;
     }
     for (int i = 0; i < ordered_nodes.size(); i++)
     {
@@ -292,13 +311,13 @@ void graph::PrintMaze()
           {
             if (GetNode({y, x, z}) == -1)
             {
-              if (GetNode({y-1, x, z}) != -1)
+              if (GetNode({y - 1, x, z}) != -1)
               {
                 std::cout << "+---";
               }
               else
               {
-                if (GetNode({y, x-1, z}) != -1)
+                if (GetNode({y, x - 1, z}) != -1)
                 {
                   std::cout << "+   ";
                 }
@@ -310,9 +329,9 @@ void graph::PrintMaze()
             }
             else
             {
-              if (AreAdjacent({y, x, z}, {y-1, x, z}))
+              if (AreAdjacent({y, x, z}, {y - 1, x, z}))
               {
-                if (AreAdjacent({y, x, z}, {y, x-1, z}) && AreAdjacent({y, x-1, z}, {y-1, x-1, z}) && AreAdjacent({y-1, x-1, z}, {y-1, x, z}))
+                if (AreAdjacent({y, x, z}, {y, x - 1, z}) && AreAdjacent({y, x - 1, z}, {y - 1, x - 1, z}) && AreAdjacent({y - 1, x - 1, z}, {y - 1, x, z}))
                 {
                   std::cout << " ";
                   std::cout << "   ";
@@ -334,7 +353,7 @@ void graph::PrintMaze()
           {
             if (GetNode({y, x, z}) == -1)
             {
-              if (GetNode({y, x-1, z}) != -1)
+              if (GetNode({y, x - 1, z}) != -1)
               {
                 std::cout << "|   ";
               }
@@ -345,10 +364,10 @@ void graph::PrintMaze()
             }
             else
             {
-              if (AreAdjacent({y, x, z}, {y, x-1, z}))
+              if (AreAdjacent({y, x, z}, {y, x - 1, z}))
               {
                 bool found = false;
-                std::vector<Tile> temp_vec = GetAdjacencyList({y,x,z});
+                std::vector<Tile> temp_vec = GetAdjacencyList({y, x, z});
                 for (int8_t i = 0; i < temp_vec.size(); i++)
                 {
                   if (temp_vec.at(i).z > z)
@@ -362,13 +381,14 @@ void graph::PrintMaze()
                     found = true;
                   }
                 }
-                if (!found){
+                if (!found)
+                {
                   std::cout << "    ";
                 }
               }
               else
               {
-                std::vector<Tile> temp_vec = GetAdjacencyList({y,x,z});
+                std::vector<Tile> temp_vec = GetAdjacencyList({y, x, z});
                 bool found = false;
                 for (int8_t i = 0; i < temp_vec.size(); i++)
                 {
@@ -383,7 +403,8 @@ void graph::PrintMaze()
                     found = true;
                   }
                 }
-                if (!found){
+                if (!found)
+                {
                   std::cout << "|   ";
                 }
               }
@@ -392,7 +413,7 @@ void graph::PrintMaze()
         }
         if (i == 0)
         {
-          if (GetNode({y, max_x, z}) != -1 || GetNode({y-1, max_x, z}) != -1) 
+          if (GetNode({y, max_x, z}) != -1 || GetNode({y - 1, max_x, z}) != -1)
             std::cout << "+\n";
           else
             std::cout << "\n";
@@ -410,7 +431,7 @@ void graph::PrintMaze()
     {
       if (GetNode({max_y, x, z}) == -1)
       {
-        if (GetNode({max_y, x-1, z}) == -1)
+        if (GetNode({max_y, x - 1, z}) == -1)
         {
           std::cout << "    ";
         }
@@ -424,7 +445,7 @@ void graph::PrintMaze()
         std::cout << "+---";
       }
     }
-    if (GetNode({max_y, max_x, z}) != -1) 
+    if (GetNode({max_y, max_x, z}) != -1)
       std::cout << "+\n";
     else
       std::cout << "\n";
@@ -435,98 +456,111 @@ void graph::PrintMaze()
 //--------------------
 
 // Heuristic function for A* algorithm
-int32_t Heuristic(const Tile& current, const Tile& goal)
+int32_t Heuristic(const Tile &current, const Tile &goal)
 {
-  // Calcolo della distanza di Manhattan come euristica
-  return std::abs(current.x - goal.x) + std::abs(current.y - goal.y) + std::abs(current.z - goal.z);
+  // Calcolo della distanza di Euclidea come euristica
+  return sqrt(pow((current.x - goal.x), 2) + pow((current.y - goal.y), 2));
 }
 
-void graph::FindPathAStar(const Tile& start, const Tile& goal, std::vector<Tile>& path, int& len)
+struct TileHasher
 {
-  int32_t start_index = GetNode(start);
-  int32_t goal_index = GetNode(goal);
-  if (start_index == goal_index || start_index == -1 || goal_index == -1)
-    return;
-
-  // Coda di priorità per la ricerca del percorso
-  std::priority_queue<PathNode, std::vector<PathNode>, std::greater<PathNode>> open_queue;
-
-  // Mappa per tenere traccia dei nodi visitati durante la ricerca
-  std::unordered_map<int32_t, PathNode> visited_map;
-
-  // Inizializzazione del nodo di partenza
-  PathNode start_node(start_index, 0, Heuristic(start, goal), nullptr);
-  open_queue.push(start_node);
-
-  while (!open_queue.empty())
+  std::size_t operator()(const Tile &tile) const
   {
-    PathNode current_node = open_queue.top();
-    open_queue.pop();
+    std::size_t h1 = std::hash<int32_t>{}(tile.y);
+    std::size_t h2 = std::hash<int32_t>{}(tile.x);
+    std::size_t h3 = std::hash<int32_t>{}(tile.z);
+    return h1 ^ (h2 << 1) ^ (h3 << 2);
+  }
+};
 
-    if (current_node.index == goal_index)
+struct CompareDist
+{
+  bool operator()(const std::pair<Tile, double> &a, const std::pair<Tile, double> &b)
+  {
+    return a.second > b.second; // Ordine crescente in base alla distanza
+  }
+};
+
+struct DistanceCalculator
+{
+  double operator()(const Tile &node1, const Tile &node2) const
+  {
+    return sqrt(pow((node1.x - node2.x), 2) + pow((node1.y - node2.y), 2));
+  }
+};
+
+struct ManhattanDistance {
+    double operator()(const Tile& node1, const Tile& node2) const {
+        int dx = abs(node1.x - node2.x);
+        int dy = abs(node1.y - node2.y);
+        int dz = abs(node1.z - node2.z);
+        return dx + dy + dz;
+    }
+};
+
+
+double potential(const Tile &node, const Tile &end)
+{
+  return sqrt(pow(node.x - end.x, 2) + pow(node.y - end.y, 2));
+}
+
+void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile> &path, int &len)
+{
+  std::unordered_map<Tile, double, TileHasher> dist;
+  std::priority_queue<std::pair<Tile, double>, std::vector<std::pair<Tile, double>>, CompareDist> open_nodes;
+  std::unordered_set<Tile, TileHasher> closed_nodes;
+  std::unordered_map<Tile, Tile, TileHasher> predecessor;
+  ManhattanDistance distance;
+  // DistanceCalculator distance;
+
+  open_nodes.push({start, 0.0});
+  dist[start] = 0.0;
+
+  while (!open_nodes.empty())
+  {
+    Tile cur_node = open_nodes.top().first;
+    open_nodes.pop();
+
+    if (cur_node == goal)
     {
-      // Percorso trovato, costruzione del vettore dei nodi del percorso
-      path.clear();
-      len = current_node.g_cost;
-      while (current_node.parent != nullptr)
+      // Costruisci il percorso partendo dal nodo goal e risali all'indietro tramite i predecessori
+      Tile current = cur_node;
+      while (!(current == start))
       {
-        path.insert(path.begin(), graph_.at(current_node.index).tile);
-        current_node = *current_node.parent;
+        path.push_back(current);
+        current = predecessor[current];
       }
-      path.insert(path.begin(), graph_.at(current_node.index).tile);
+      path.push_back(start);
+      std::reverse(path.begin(), path.end());
+      len = dist[cur_node];
       return;
     }
 
-    visited_map[current_node.index] = current_node;
+    closed_nodes.insert(cur_node);
 
-    // Generazione dei successori del nodo corrente
-    std::vector<Tile> successors = GetAdjacencyList(graph_.at(current_node.index).tile);
-    for (const Tile& successor : successors)
+    // Apri tutti i vicini
+    for (const auto &neighbor : GetWeightedAdjacencyList(cur_node))
     {
-      int32_t successor_index = GetNode(successor);
-      int32_t successor_g_cost = current_node.g_cost + 1; // Costo unitario tra nodi adiacenti
-
-      // Controllo se il nodo successore è già stato visitato con un costo inferiore
-      auto visited_it = visited_map.find(successor_index);
-      if (visited_it != visited_map.end() && successor_g_cost >= visited_it->second.g_cost)
-        continue;
-
-      int32_t successor_f_cost = successor_g_cost + Heuristic(successor, goal);
-
-      // Controllo se il nodo successore è già nella coda di priorità con un costo inferiore
-      bool is_in_open = false;
-      std::vector<PathNode> open_queue_copy;
-      while (!open_queue.empty())
+      if (closed_nodes.count(neighbor.first) == 0)
       {
-        open_queue_copy.push_back(open_queue.top());
-        open_queue.pop();
-      }
-      for (const auto& node : open_queue_copy)
-      {
-        if (node.index == successor_index && successor_g_cost >= node.g_cost)
+        double new_dist = dist[cur_node] + distance(cur_node, neighbor.first) + neighbor.second;
+        if (!dist.count(neighbor.first) || new_dist < dist[neighbor.first])
         {
-          is_in_open = true;
-          break;
+          dist[neighbor.first] = new_dist;
+          predecessor[neighbor.first] = cur_node;
+          open_nodes.push({neighbor.first, new_dist + potential(neighbor.first, goal)});
         }
-        open_queue.push(node);
       }
-      if (is_in_open)
-        continue;
-
-      // Aggiunta del nodo successore alla coda di priorità
-      open_queue.push(PathNode(successor_index, successor_g_cost, successor_f_cost, &visited_map[current_node.index]));
     }
   }
 
-
-  // Nessun percorso trovato
+  // Se l'algoritmo arriva qui, significa che non è stato possibile trovare un percorso
   len = -1;
-  path.clear();
 }
 
 //---------
 
-void graph::PrintMazePath(std::vector<Tile>& path)
+void graph::PrintMazePath(std::vector<Tile> &path)
 {
   std::vector<Tile> ordered_nodes;
   ordered_nodes.reserve(1000);
@@ -545,7 +579,7 @@ void graph::PrintMazePath(std::vector<Tile>& path)
   }
 
   int32_t min_z = ordered_nodes.at(0).z;
-  int32_t max_z = ordered_nodes.at(ordered_nodes.size()-1).z;
+  int32_t max_z = ordered_nodes.at(ordered_nodes.size() - 1).z;
 
   for (int8_t z = min_z; z <= max_z; z++)
   {
@@ -558,10 +592,10 @@ void graph::PrintMazePath(std::vector<Tile>& path)
     {
       if (z == ordered_nodes.at(i).z)
         max_x = ordered_nodes.at(i).x;
-        min_x = ordered_nodes.at(i).x;
-        max_y = ordered_nodes.at(i).y;
-        min_y = ordered_nodes.at(i).y;
-        break;
+      min_x = ordered_nodes.at(i).x;
+      max_y = ordered_nodes.at(i).y;
+      min_y = ordered_nodes.at(i).y;
+      break;
     }
     for (int i = 0; i < ordered_nodes.size(); i++)
     {
@@ -585,13 +619,13 @@ void graph::PrintMazePath(std::vector<Tile>& path)
           {
             if (GetNode({y, x, z}) == -1)
             {
-              if (GetNode({y-1, x, z}) != -1)
+              if (GetNode({y - 1, x, z}) != -1)
               {
                 std::cout << "+---";
               }
               else
               {
-                if (GetNode({y, x-1, z}) != -1)
+                if (GetNode({y, x - 1, z}) != -1)
                 {
                   std::cout << "+   ";
                 }
@@ -603,9 +637,9 @@ void graph::PrintMazePath(std::vector<Tile>& path)
             }
             else
             {
-              if (AreAdjacent({y, x, z}, {y-1, x, z}))
+              if (AreAdjacent({y, x, z}, {y - 1, x, z}))
               {
-                if (AreAdjacent({y, x, z}, {y, x-1, z}) && AreAdjacent({y, x-1, z}, {y-1, x-1, z}) && AreAdjacent({y-1, x-1, z}, {y-1, x, z}))
+                if (AreAdjacent({y, x, z}, {y, x - 1, z}) && AreAdjacent({y, x - 1, z}, {y - 1, x - 1, z}) && AreAdjacent({y - 1, x - 1, z}, {y - 1, x, z}))
                 {
                   std::cout << " ";
                   std::cout << "   ";
@@ -627,7 +661,7 @@ void graph::PrintMazePath(std::vector<Tile>& path)
           {
             if (GetNode({y, x, z}) == -1)
             {
-              if (GetNode({y, x-1, z}) != -1)
+              if (GetNode({y, x - 1, z}) != -1)
               {
                 std::cout << "|   ";
               }
@@ -638,10 +672,10 @@ void graph::PrintMazePath(std::vector<Tile>& path)
             }
             else
             {
-              if (AreAdjacent({y, x, z}, {y, x-1, z}))
+              if (AreAdjacent({y, x, z}, {y, x - 1, z}))
               {
                 bool found = false;
-                std::vector<Tile> temp_vec = GetAdjacencyList({y,x,z});
+                std::vector<Tile> temp_vec = GetAdjacencyList({y, x, z});
                 for (int8_t i = 0; i < temp_vec.size(); i++)
                 {
                   if (temp_vec.at(i).z > z)
@@ -655,11 +689,12 @@ void graph::PrintMazePath(std::vector<Tile>& path)
                     found = true;
                   }
                 }
-                if (!found){
+                if (!found)
+                {
                   bool in_path = false;
                   for (int8_t p = 0; p < path.size(); p++)
                   {
-                    if (Tile{y,x,z} == path.at(p))
+                    if (Tile{y, x, z} == path.at(p))
                     {
                       in_path = true;
                       break;
@@ -677,7 +712,7 @@ void graph::PrintMazePath(std::vector<Tile>& path)
               }
               else
               {
-                std::vector<Tile> temp_vec = GetAdjacencyList({y,x,z});
+                std::vector<Tile> temp_vec = GetAdjacencyList({y, x, z});
                 bool found = false;
                 for (int8_t i = 0; i < temp_vec.size(); i++)
                 {
@@ -694,11 +729,12 @@ void graph::PrintMazePath(std::vector<Tile>& path)
                     break;
                   }
                 }
-                if (!found){
+                if (!found)
+                {
                   bool in_path = false;
                   for (int8_t p = 0; p < path.size(); p++)
                   {
-                    if (Tile{y,x,z} == path.at(p))
+                    if (Tile{y, x, z} == path.at(p))
                     {
                       in_path = true;
                       break;
@@ -719,7 +755,7 @@ void graph::PrintMazePath(std::vector<Tile>& path)
         }
         if (i == 0)
         {
-          if (GetNode({y, max_x, z}) != -1 || GetNode({y-1, max_x, z}) != -1) 
+          if (GetNode({y, max_x, z}) != -1 || GetNode({y - 1, max_x, z}) != -1)
             std::cout << "+\n";
           else
             std::cout << "\n";
@@ -737,7 +773,7 @@ void graph::PrintMazePath(std::vector<Tile>& path)
     {
       if (GetNode({max_y, x, z}) == -1)
       {
-        if (GetNode({max_y, x-1, z}) == -1)
+        if (GetNode({max_y, x - 1, z}) == -1)
         {
           std::cout << "    ";
         }
@@ -751,7 +787,7 @@ void graph::PrintMazePath(std::vector<Tile>& path)
         std::cout << "+---";
       }
     }
-    if (GetNode({max_y, max_x, z}) != -1) 
+    if (GetNode({max_y, max_x, z}) != -1)
       std::cout << "+\n";
     else
       std::cout << "\n";

@@ -2,10 +2,13 @@
 
 #include <stdint.h>
 #include <iostream>
+#include <math.h>
 #include <vector>
-#include <queue>
 #include <unordered_map>
-#include <functional>
+#include <unordered_set>
+#include <queue>
+#include <algorithm>
+
 
 const std::string red("\033[0;31m");
 const std::string green("\033[0;32m");
@@ -16,21 +19,6 @@ const std::string reset("\033[0m");
 #define LOG_r(x) std::cout << red << x << reset << std::endl;
 #define LOG_g(x) std::cout << green << x << reset << std::endl;
 #define LOG_b(x) std::cout << blue << x << reset << std::endl;
-
-struct PathNode
-{
-  int32_t index;
-  int32_t g_cost;
-  int32_t f_cost;
-  PathNode* parent;
-
-  friend bool operator>(const PathNode& lhs, const PathNode& rhs) {
-    return lhs.g_cost > rhs.g_cost;
-  }
-
-  PathNode() : index(0), g_cost(0), f_cost(0), parent(nullptr) {}
-  PathNode(int32_t i, int32_t g, int32_t f, PathNode* p) : index(i), g_cost(g), f_cost(f), parent(p) {}
-};
 
 struct Tile
 {
@@ -157,6 +145,8 @@ public:
   // The GetAdjacencyList function returns the adjacency list of a vertex as a vector of tiles.
   // It retrieves the adjacency list of the vertex and converts it to a vector of tiles.
   std::vector<Tile> GetAdjacencyList(Tile t);
+
+  std::vector<std::pair <Tile, uint16_t>> GetWeightedAdjacencyList(Tile v1);
 
   int32_t GetNode(const Tile &t);
 
