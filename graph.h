@@ -88,12 +88,10 @@ struct Vertex
 {
   Tile tile;
   HalfEdge *adjacency_list;
-  bool visited;
   Vertex(Tile t, HalfEdge *adjacency_list, bool visited)
   {
     this->tile = t;
     this->adjacency_list = adjacency_list;
-    this->visited = visited;
   }
   Vertex(Tile t)
   {

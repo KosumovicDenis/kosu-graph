@@ -194,45 +194,6 @@ std::vector<std::pair <Tile, uint16_t>> graph::GetWeightedAdjacencyList(Tile v1)
 
 }
 
-
-// The FindPathAux function is a helper function used by FindPath to find a path between two vertices in the graph.
-// It performs a depth-first search (DFS) starting from the "from" vertex and backtracks to find the path to the "to" vertex.
-bool FindPathAux(int32_t here, int32_t to, std::vector<Tile> &path, int &len, std::vector<Vertex> &graph_)
-{
-  graph_.at(here).visited = true;
-  for (HalfEdge *ee = graph_.at(here).adjacency_list; ee != nullptr; ee = ee->next_edge)
-  {
-    if (graph_.at(ee->vertex_index).visited)
-      continue;
-    if (graph_.at(ee->vertex_index).tile == graph_.at(to).tile)
-    {
-      path.insert(path.begin(), graph_.at(ee->vertex_index).tile);
-      len += ee->weight;
-      return true;
-    }
-    bool res = FindPathAux(ee->vertex_index, to, path, len, graph_);
-    if (res)
-    {
-      path.insert(path.begin(), graph_.at(ee->vertex_index).tile);
-      len += ee->weight;
-      return true;
-    }
-  }
-  return false;
-}
-
-void graph::FindPathDFS(Tile v1, Tile v2, std::vector<Tile> &path, int &len)
-{
-  int32_t from = GetNode(v1), to = GetNode(v2);
-  if (from == to || from == -1 || to == -1)
-    return;
-  for (int32_t i = 0; i < graph_.size(); i++)
-    graph_.at(i).visited = false;
-  len = 0;
-  FindPathAux(from, to, path, len, graph_);
-  return;
-}
-
 void graph::PrintGraph()
 {
   for (int32_t i = 0; i < graph_.size(); i++)
@@ -455,6 +416,14 @@ void graph::PrintMaze()
 
 //--------------------
 
+struct TileDistDirection
+{
+  Tile tile;
+  double distance;
+  int direction;
+};
+
+
 // Heuristic function for A* algorithm
 int32_t Heuristic(const Tile &current, const Tile &goal)
 {
@@ -475,9 +444,9 @@ struct TileHasher
 
 struct CompareDist
 {
-  bool operator()(const std::pair<Tile, double> &a, const std::pair<Tile, double> &b)
+  bool operator()(const TileDistDirection &a, const TileDistDirection &b)
   {
-    return a.second > b.second; // Ordine crescente in base alla distanza
+    return a.distance > b.distance; // Ordine crescente in base alla distanza
   }
 };
 
@@ -507,7 +476,7 @@ double potential(const Tile &node, const Tile &end)
 void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile> &path, int &len)
 {
   std::unordered_map<Tile, double, TileHasher> dist;
-  std::priority_queue<std::pair<Tile, double>, std::vector<std::pair<Tile, double>>, CompareDist> open_nodes;
+  std::priority_queue<TileDistDirection, std::vector<TileDistDirection>, CompareDist> open_nodes;
   std::unordered_set<Tile, TileHasher> closed_nodes;
   std::unordered_map<Tile, Tile, TileHasher> predecessor;
   ManhattanDistance distance;
@@ -518,12 +487,12 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
 
   while (!open_nodes.empty())
   {
-    Tile cur_node = open_nodes.top().first;
+    TileDistDirection cur_node = open_nodes.top();
     open_nodes.pop();
 
-    if (cur_node == goal)
+    if (cur_node.tile == goal)
     {
-      Tile current = cur_node;
+      Tile current = cur_node.tile;
       while (!(current == start))
       {
         path.push_back(current);
@@ -531,22 +500,22 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
       }
       path.push_back(start);
       std::reverse(path.begin(), path.end());
-      len = dist[cur_node];
+      len = dist[cur_node.tile];
       return;
     }
 
-    closed_nodes.insert(cur_node);
+    closed_nodes.insert(cur_node.tile);
 
-    for (const auto &neighbor : GetWeightedAdjacencyList(cur_node))
+    for (const auto &neighbor : GetWeightedAdjacencyList(cur_node.tile))
     {
       if (closed_nodes.count(neighbor.first) == 0)
       {
-        double new_dist = dist[cur_node] + distance(cur_node, neighbor.first) + neighbor.second;
+        double new_dist = dist[cur_node.tile] + distance(cur_node.tile, neighbor.first) + neighbor.second;
         if (!dist.count(neighbor.first) || new_dist < dist[neighbor.first])
         {
           dist[neighbor.first] = new_dist;
-          predecessor[neighbor.first] = cur_node;
-          open_nodes.push({neighbor.first, new_dist + potential(neighbor.first, goal)});
+          predecessor[neighbor.first] = cur_node.tile;
+          open_nodes.push({neighbor.first, new_dist});
         }
       }
     }
