@@ -459,12 +459,49 @@ struct DistanceCalculator
 };
 
 struct ManhattanDistance {
-    double operator()(const Tile& node1, const Tile& node2) const {
-        int dx = abs(node1.x - node2.x);
-        int dy = abs(node1.y - node2.y);
-        int dz = abs(node1.z - node2.z);
-        return dx + dy + dz;
+  double operator()(const TileDistDirection& node1, const Tile& node2, int &new_direction) const {
+    int dx = abs(node1.tile.x - node2.x);
+    int dy = abs(node1.tile.y - node2.y);
+    int dz = abs(node1.tile.z - node2.z);
+    int turn_weight = 0;
+    if (node1.direction == 0 || node1.direction == 2)
+    {
+      if (dx != 0)
+      {
+        turn_weight += 2;
+        if (node1.tile.x - node2.x > 0)
+        {
+          new_direction = 1;
+        }
+        else
+        {
+          new_direction = 3;
+        }
+      }
+    } else
+    {
+      if (dy != 0)
+      {
+        turn_weight += 2;
+        if (node1.tile.y - node2.y > 0)
+        {
+          new_direction = 0;
+        }
+        else
+        {
+          new_direction = 2;
+        }
+      }
     }
+
+    /* Ramp
+    if (dz != 0)
+    {
+      turn_weight += 5;
+    }
+    */
+    return dx + dy + dz + turn_weight;
+  }
 };
 
 
@@ -473,7 +510,7 @@ double potential(const Tile &node, const Tile &end)
   return sqrt(pow(node.x - end.x, 2) + pow(node.y - end.y, 2));
 }
 
-void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile> &path, int &len)
+void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile> &path, int &len, int const direction)
 {
   std::unordered_map<Tile, double, TileHasher> dist;
   std::priority_queue<TileDistDirection, std::vector<TileDistDirection>, CompareDist> open_nodes;
@@ -482,7 +519,7 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
   ManhattanDistance distance;
   // DistanceCalculator distance;
 
-  open_nodes.push({start, 0.0});
+  open_nodes.push({start, 0.0, direction});
   dist[start] = 0.0;
 
   while (!open_nodes.empty())
@@ -510,12 +547,13 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
     {
       if (closed_nodes.count(neighbor.first) == 0)
       {
-        double new_dist = dist[cur_node.tile] + distance(cur_node.tile, neighbor.first) + neighbor.second;
+        int new_direction = cur_node.direction;
+        double new_dist = dist[cur_node.tile] + distance(cur_node, neighbor.first, new_direction) + neighbor.second;
         if (!dist.count(neighbor.first) || new_dist < dist[neighbor.first])
         {
           dist[neighbor.first] = new_dist;
           predecessor[neighbor.first] = cur_node.tile;
-          open_nodes.push({neighbor.first, new_dist});
+          open_nodes.push({neighbor.first, new_dist, new_direction});
         }
       }
     }

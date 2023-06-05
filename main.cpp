@@ -47,6 +47,7 @@ int main(int argc, char const *argv[])
   g.AddEdge({0,2}, {1,2}, 1);
   g.AddEdge({0,3}, {1,3}, 2);
   g.AddEdge({0,5}, {1,5}, 1);
+  g.AddEdge({1,0}, {1,1}, 1);
   g.AddEdge({1,1}, {2,1}, 1);
   g.AddEdge({1,2}, {1,3}, 1);
   g.AddEdge({1,3}, {2,3}, 1);
@@ -89,7 +90,7 @@ int main(int argc, char const *argv[])
   std::cout << "-- A* --\n";
   std::vector<Tile> path;
   int len;
-  g.FindPathAStar({0,0}, {0,5}, path, len);
+  g.FindPathAStar({0,0}, {4,4}, path, len, 2);
   std::cout << "Total weigth: ";
   std::cout << len << std::endl;
   g.PrintMazePath(path);

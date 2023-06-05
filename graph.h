@@ -152,7 +152,7 @@ public:
   // It calls the FindPathAux function and populates the path vector with the tiles of.
   void FindPathDFS(Tile, Tile, std::vector<Tile> &, int &);
 
-  void FindPathAStar(const Tile& start, const Tile& goal, std::vector<Tile>& path, int& len);
+  void FindPathAStar(const Tile& start, const Tile& goal, std::vector<Tile>& path, int& len, int const direction);
 
   void PrintGraph();
 
