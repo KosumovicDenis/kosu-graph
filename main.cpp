@@ -90,7 +90,7 @@ int main(int argc, char const *argv[])
   std::cout << "-- A* --\n";
   std::vector<Tile> path;
   int len;
-  g.FindPathAStar({0,0}, {4,4}, path, len, 2);
+  g.FindPathAStar({0,0}, {3,0}, path, len, 0);
   std::cout << "Total weigth: ";
   std::cout << len << std::endl;
   g.PrintMazePath(path);

@@ -458,38 +458,75 @@ struct DistanceCalculator
   }
 };
 
-struct ManhattanDistance {
+struct Distance {
   double operator()(const TileDistDirection& node1, const Tile& node2, int &new_direction) const {
-    int dx = abs(node1.tile.x - node2.x);
-    int dy = abs(node1.tile.y - node2.y);
-    int dz = abs(node1.tile.z - node2.z);
+    int dx = node1.tile.x - node2.x;
+    int dy = node1.tile.y - node2.y;
+    int dz = node1.tile.z - node2.z;
     int turn_weight = 0;
     if (node1.direction == 0 || node1.direction == 2)
     {
       if (dx != 0)
       {
         turn_weight += 2;
-        if (node1.tile.x - node2.x > 0)
-        {
-          new_direction = 1;
-        }
-        else
+        if (dx > 0)
         {
           new_direction = 3;
         }
+        else
+        {
+          new_direction = 1;
+        }
       }
-    } else
+      else
+      {
+        if (node1.direction == 0)
+        {
+          if (dy > 0)
+          {
+            turn_weight += 4;
+            new_direction = 2;
+          }
+        }
+        else
+        {
+          if (dy < 0)
+          {
+            turn_weight += 4;
+            new_direction = 0;
+          }
+        }
+      }
+    }
+    else
     {
       if (dy != 0)
       {
         turn_weight += 2;
         if (node1.tile.y - node2.y > 0)
         {
-          new_direction = 0;
+          new_direction = 2;
         }
         else
         {
-          new_direction = 2;
+          new_direction = 0;
+        }
+      }
+      else
+      {
+        if (node1.direction == 1)
+        {
+          if (dx > 0)
+          {
+            turn_weight += 4;
+          }
+        }
+        else
+        {
+          if (dx < 0)
+          {
+            turn_weight += 4;
+          }
         }
       }
     }
@@ -500,7 +537,7 @@ struct ManhattanDistance {
       turn_weight += 5;
     }
     */
-    return dx + dy + dz + turn_weight;
+    return turn_weight;
   }
 };
 
@@ -516,7 +553,7 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
   std::priority_queue<TileDistDirection, std::vector<TileDistDirection>, CompareDist> open_nodes;
   std::unordered_set<Tile, TileHasher> closed_nodes;
   std::unordered_map<Tile, Tile, TileHasher> predecessor;
-  ManhattanDistance distance;
+  Distance distance;
   // DistanceCalculator distance;
 
   open_nodes.push({start, 0.0, direction});
