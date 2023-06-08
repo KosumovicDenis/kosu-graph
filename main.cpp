@@ -43,9 +43,9 @@ int main(int argc, char const *argv[])
   g.AddEdge({0,0}, {1,0}, 1);
   g.AddEdge({0,1}, {0,2}, 1);
   g.AddEdge({0,1}, {1,1}, 1);
-  g.AddEdge({0,2}, {0,3}, 2);
+  g.AddEdge({0,2}, {0,3}, 1);
   g.AddEdge({0,2}, {1,2}, 1);
-  g.AddEdge({0,3}, {1,3}, 2);
+  g.AddEdge({0,3}, {1,3}, 1);
   g.AddEdge({0,5}, {1,5}, 1);
   g.AddEdge({1,0}, {1,1}, 1);
   g.AddEdge({1,1}, {2,1}, 1);
@@ -100,5 +100,20 @@ int main(int argc, char const *argv[])
     std::cout << path.at(i) << std::endl;
   }
 
+  g.ChangeTileAdjacencyListWeight({1,1}, 5);
+  g.PrintGraph();
+
+  g.RemoveTileAdjacencyList({1,1});
+  g.PrintGraph();
+
+  g.FindPathAStar({0,0}, {3,0}, path, len, 0);
+  std::cout << "Total weigth: ";
+  std::cout << len << std::endl;
+  g.PrintMazePath(path);
+  std::cout << "Path vector: ";
+  for (int i = 0; i < path.size(); i++)
+  {
+    std::cout << path.at(i) << std::endl;
+  }
   return 0;
 }

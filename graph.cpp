@@ -1,5 +1,72 @@
 #include "graph.h"
 
+std::ostream &operator<<(std::ostream &os, const Tile &t)
+{
+  return (os << "y: " << t.y << " - x: " << t.x << " - z: " << t.z);
+}
+
+std::istream &operator>>(std::istream &is, Tile &t)
+{
+  LOG("Inserisci y:");
+  is >> t.y;
+  LOG("Inserisci x:");
+  is >> t.x;
+  LOG("Inserisci z:");
+  is >> t.z;
+  return is;
+}
+
+bool operator==(const Tile &a, const Tile &b)
+{
+  if (a.x == b.x && a.y == b.y && a.z == b.z)
+    return true;
+  return false;
+}
+
+bool operator<(const Tile &a, const Tile &b)
+{
+  if (a.z == b.z)
+  {
+    if (a.y == b.y)
+    {
+      return a.x < b.x;
+    }
+    else
+    {
+      return a.y < b.y;
+    }
+  }
+  else 
+    return a.z < b.z;
+}
+
+bool operator>(const Tile &a, const Tile &b)
+{
+  if (a.z == b.z)
+  {
+    if (a.y == b.y)
+    {
+      return a.x > b.x;
+    }
+    else
+    {
+      return a.y > b.y;
+    }
+  }
+  else
+    return a.z > b.z;
+}
+//-----------------------------------
+Vertex::Vertex(Tile t, HalfEdge *adjacency_list, bool visited)
+{
+  this->tile = t;
+  this->adjacency_list = adjacency_list;
+}
+Vertex::Vertex(Tile t)
+{
+  this->tile = t;
+}
+//-----------------------------------
 graph::graph()
 {
   graph_.reserve(1000);
@@ -57,26 +124,41 @@ void AddHalfEdge(int32_t index_from, int32_t index_to, uint16_t weight, std::vec
   graph_.at(index_from).adjacency_list = e;
 }
 
-// The RemoveHalfEdge function removes a half-edge between two nodes in the graph.
-// It searches for the specified edge and removes it from the adjacency list of the source node.
-void RemoveHalfEdge(int32_t index_from, int32_t index_to, std::vector<Vertex> &graph_)
+void ChangeHalfEdgeWeight(int32_t index_from, int32_t index_to, uint16_t weight, std::vector<Vertex> &graph_)
 {
-  /* TODO */
   for (HalfEdge *edges = graph_.at(index_from).adjacency_list; edges != nullptr; edges = edges->next_edge)
   {
     if (edges->vertex_index == index_to)
     {
-      HalfEdge *temp = edges;
+      edges->weight = weight;
+      return;
+    }
+  }
+}
+
+void ChangeAdjacencyListWeight(int32_t index_tile, uint16_t weight, std::vector<Vertex> &graph_)
+{
+  for (HalfEdge *edges = graph_.at(index_tile).adjacency_list; edges != nullptr; edges = edges->next_edge)
+  {
+    edges->weight = weight;
+  }
+}
+
+// The RemoveHalfEdge function removes a half-edge between two nodes in the graph.
+// It searches for the specified edge and removes it from the adjacency list of the source node.
+void RemoveHalfEdge(int32_t index_from, int32_t index_to, std::vector<Vertex> &graph_)
+{
+  for (HalfEdge *edges = graph_.at(index_from).adjacency_list; edges != nullptr; edges = edges->next_edge)
+  {
+    if (edges->vertex_index == index_to)
+    {
       edges = edges->next_edge;
       graph_.at(index_from).adjacency_list = edges;
-      delete temp;
       return;
     }
     if (edges->next_edge->vertex_index == index_to)
     {
-      HalfEdge *temp = edges->next_edge;
       edges->next_edge = edges->next_edge->next_edge;
-      delete temp;
       return;
     }
   }
@@ -110,6 +192,31 @@ bool graph::AddEdge(Tile from, Tile to, uint16_t weight)
   return true;
 }
 
+bool graph::ChangeTileWeight(Tile from, Tile to, uint16_t weight)
+{
+  if (from == to)
+    return false;
+  int32_t index_from;
+  int32_t index_to;
+  if (!IsVertexIn(from, index_from, graph_) || !IsVertexIn(to, index_to, graph_))
+    return false;
+  if (!AuxAreAdjacent(index_from, index_to, graph_))
+    return false;
+  ChangeHalfEdgeWeight(index_from, index_to, weight, graph_);
+  ChangeHalfEdgeWeight(index_to, index_from, weight, graph_);
+  return true;
+}
+
+bool graph::ChangeTileAdjacencyListWeight(Tile tile, uint16_t weight)
+{
+  if (GetNode(tile) == -1)
+    return false;
+  if (graph_.at(GetNode(tile)).adjacency_list == nullptr)
+    return false;
+  ChangeAdjacencyListWeight(GetNode(tile), weight, graph_);
+  return true;
+}
+
 bool graph::RemoveEdge(Tile from, Tile to)
 {
   if (from == to)
@@ -122,6 +229,22 @@ bool graph::RemoveEdge(Tile from, Tile to)
     return false;
   RemoveHalfEdge(index_from, index_to, graph_);
   RemoveHalfEdge(index_to, index_from, graph_);
+  return true;
+}
+
+bool graph::RemoveTileAdjacencyList(Tile tile)
+{
+  int32_t index_tile = GetNode(tile);
+  if (index_tile == -1)
+    return false;
+  if (graph_.at(index_tile).adjacency_list == nullptr)
+    return false;
+  HalfEdge *edges = graph_.at(index_tile).adjacency_list;
+  while (edges != nullptr)
+  {
+    RemoveEdge(graph_.at(edges->vertex_index).tile, graph_.at(index_tile).tile);
+    edges = edges->next_edge;
+  }
   return true;
 }
 
@@ -196,6 +319,7 @@ std::vector<std::pair <Tile, uint16_t>> graph::GetWeightedAdjacencyList(Tile v1)
 
 void graph::PrintGraph()
 {
+  std::cout << "Graph:\n";
   for (int32_t i = 0; i < graph_.size(); i++)
   {
     std::cout << "(" << graph_.at(i).tile << ") |->| ";
@@ -549,6 +673,7 @@ double potential(const Tile &node, const Tile &end)
 
 void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile> &path, int &len, int const direction)
 {
+  path.clear();
   std::unordered_map<Tile, double, TileHasher> dist;
   std::priority_queue<TileDistDirection, std::vector<TileDistDirection>, CompareDist> open_nodes;
   std::unordered_set<Tile, TileHasher> closed_nodes;
