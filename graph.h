@@ -257,6 +257,12 @@ public:
   void PrintMaze();
 
   /**
+   * @brief Prints the maze.
+   * @param current_position The current position in the maze.
+   */
+  void PrintMaze(Tile current_position);
+
+  /**
    * @brief Prints the maze path.
    * @param path The path to be printed.
    */

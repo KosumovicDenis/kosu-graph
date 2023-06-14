@@ -115,5 +115,6 @@ int main(int argc, char const *argv[])
   {
     std::cout << path.at(i) << std::endl;
   }
+  g.PrintMaze({0,0,0});
   return 0;
 }

@@ -56,7 +56,7 @@ bool operator>(const Tile &a, const Tile &b)
   else
     return a.z > b.z;
 }
-//-----------------------------------
+//--------------------
 Vertex::Vertex(Tile t, HalfEdge *adjacency_list, bool visited)
 {
   this->tile = t;
@@ -66,7 +66,7 @@ Vertex::Vertex(Tile t)
 {
   this->tile = t;
 }
-//-----------------------------------
+//--------------------
 graph::graph()
 {
   graph_.reserve(1000);
@@ -542,6 +542,225 @@ void graph::PrintMaze()
   std::cout << std::endl;
 }
 
+void graph::PrintMaze(Tile current_position)
+{
+  if (graph_.size() == 0)
+  {
+    return;
+  }
+  std::vector<Tile> ordered_nodes;
+  ordered_nodes.reserve(1000);
+  for (int32_t i = 0; i < graph_.size(); i++)
+  {
+    int32_t temp_index = 0;
+    for (int32_t j = 0; j < ordered_nodes.size(); j++)
+    {
+      if (graph_.at(i).tile < ordered_nodes.at(j))
+      {
+        break;
+      }
+      temp_index++;
+    }
+    ordered_nodes.insert(ordered_nodes.begin() + temp_index, graph_.at(i).tile);
+  }
+
+  int32_t min_z = ordered_nodes.at(0).z;
+  int32_t max_z = ordered_nodes.at(ordered_nodes.size() - 1).z;
+
+  for (int8_t z = min_z; z <= max_z; z++)
+  {
+    std::cout << "Floor: " << (int)z << "\n";
+    int32_t max_x = ordered_nodes.at(0).x;
+    int32_t min_x = ordered_nodes.at(0).x;
+    int32_t max_y = ordered_nodes.at(0).y;
+    int32_t min_y = ordered_nodes.at(0).y;
+    for (int i = 0; i < ordered_nodes.size(); i++)
+    {
+      if (z == ordered_nodes.at(i).z)
+        max_x = ordered_nodes.at(i).x;
+      min_x = ordered_nodes.at(i).x;
+      max_y = ordered_nodes.at(i).y;
+      min_y = ordered_nodes.at(i).y;
+      break;
+    }
+    for (int i = 0; i < ordered_nodes.size(); i++)
+    {
+      if (max_x < ordered_nodes.at(i).x && z == ordered_nodes.at(i).z)
+        max_x = ordered_nodes.at(i).x;
+      if (min_x > ordered_nodes.at(i).x && z == ordered_nodes.at(i).z)
+        min_x = ordered_nodes.at(i).x;
+      if (max_y < ordered_nodes.at(i).y && z == ordered_nodes.at(i).z)
+        max_y = ordered_nodes.at(i).y;
+      if (min_y > ordered_nodes.at(i).y && z == ordered_nodes.at(i).z)
+        min_y = ordered_nodes.at(i).y;
+    }
+
+    for (int8_t y = max_y; y >= min_y; y--)
+    {
+      for (int8_t i = 0; i < 3; i++)
+      {
+        for (int8_t x = min_x; x <= max_x; x++)
+        {
+          if (i == 0)
+          {
+            if (GetNode({y, x, z}) == -1)
+            {
+              if (GetNode({y + 1, x, z}) != -1)
+              {
+                std::cout << "+---";
+              }
+              else
+              {
+                if (GetNode({y, x - 1, z}) != -1)
+                {
+                  std::cout << "+   ";
+                }
+                else
+                {
+                  std::cout << "    ";
+                }
+              }
+            }
+            else
+            {
+              if (AreAdjacent({y, x, z}, {y + 1, x, z}))
+              {
+                if (AreAdjacent({y, x, z}, {y, x - 1, z}) && AreAdjacent({y, x - 1, z}, {y + 1, x - 1, z}) && AreAdjacent({y + 1, x - 1, z}, {y + 1, x, z}))
+                {
+                  std::cout << " ";
+                  std::cout << "   ";
+                }
+                else
+                {
+                  std::cout << "+";
+                  std::cout << "   ";
+                }
+              }
+              else
+              {
+                std::cout << "+";
+                std::cout << "---";
+              }
+            }
+          }
+          else if (i == 1)
+          {
+            if (GetNode({y, x, z}) == -1)
+            {
+              if (GetNode({y, x - 1, z}) != -1)
+              {
+                std::cout << "|   ";
+              }
+              else
+              {
+                std::cout << "    ";
+              }
+            }
+            else
+            {
+              if (AreAdjacent({y, x, z}, {y, x - 1, z}))
+              {
+                if (Tile{y, x, z} == current_position)
+                {
+                  std::cout << "  R ";
+                }
+                else
+                {
+                  bool found = false;
+                  std::vector<Tile> temp_vec = GetAdjacencyList({y, x, z});
+                  for (int8_t i = 0; i < temp_vec.size(); i++)
+                  {
+                    if (temp_vec.at(i).z > z)
+                    {
+                      std::cout << "  U ";
+                      found = true;
+                    }
+                    else if (temp_vec.at(i).z < z)
+                    {
+                      std::cout << "  D ";
+                      found = true;
+                    }
+                  }
+                  if (!found)
+                  {
+                    std::cout << "    ";
+                  }
+                }
+              }
+              else
+              {
+                if (Tile{y, x, z} == current_position)
+                {
+                  std::cout << "| R ";
+                }
+                else
+                {
+                std::vector<Tile> temp_vec = GetAdjacencyList({y, x, z});
+                bool found = false;
+                for (int8_t i = 0; i < temp_vec.size(); i++)
+                {
+                  if (temp_vec.at(i).z > z)
+                  {
+                    std::cout << "| U ";
+                    found = true;
+                  }
+                  else if (temp_vec.at(i).z < z)
+                  {
+                    std::cout << "| D ";
+                    found = true;
+                  }
+                }
+                if (!found)
+                {
+                  std::cout << "|   ";
+                }
+                }
+              }
+            }
+          }
+        }
+        if (i == 0)
+        {
+          if (GetNode({y, max_x, z}) != -1 || GetNode({y + 1, max_x, z}) != -1)
+            std::cout << "+\n";
+          else
+            std::cout << "\n";
+        }
+        else if (i == 1)
+        {
+          if (GetNode({y, max_x, z}) != -1)
+            std::cout << "|\n";
+          else
+            std::cout << "\n";
+        }
+      }
+    }
+    for (int8_t x = min_x; x <= max_x; x++)
+    {
+      if (GetNode({min_y, x, z}) == -1)
+      {
+        if (GetNode({min_y, x - 1, z}) == -1)
+        {
+          std::cout << "    ";
+        }
+        else
+        {
+          std::cout << "+   ";
+        }
+      }
+      else
+      {
+        std::cout << "+---";
+      }
+    }
+    if (GetNode({min_y, max_x, z}) != -1)
+      std::cout << "+\n";
+    else
+      std::cout << "\n";
+  }
+  std::cout << std::endl;
+}
+
 //--------------------
 
 struct TileDistDirection
@@ -669,7 +888,6 @@ struct Distance {
   }
 };
 
-
 double potential(const Tile &node, const Tile &end)
 {
   return sqrt(pow(node.x - end.x, 2) + pow(node.y - end.y, 2));
@@ -728,7 +946,7 @@ void graph::FindPathAStar(const Tile &start, const Tile &goal, std::vector<Tile>
   len = -1;
 }
 
-//---------
+//--------------------
 
 void graph::PrintMazePath(std::vector<Tile> &path)
 {
