@@ -390,7 +390,7 @@ void graph::PrintMaze()
         min_y = ordered_nodes.at(i).y;
     }
 
-    for (int8_t y = min_y; y <= max_y; y++)
+    for (int8_t y = max_y; y >= min_y; y--)
     {
       for (int8_t i = 0; i < 3; i++)
       {
@@ -400,7 +400,7 @@ void graph::PrintMaze()
           {
             if (GetNode({y, x, z}) == -1)
             {
-              if (GetNode({y - 1, x, z}) != -1)
+              if (GetNode({y + 1, x, z}) != -1)
               {
                 std::cout << "+---";
               }
@@ -418,9 +418,9 @@ void graph::PrintMaze()
             }
             else
             {
-              if (AreAdjacent({y, x, z}, {y - 1, x, z}))
+              if (AreAdjacent({y, x, z}, {y + 1, x, z}))
               {
-                if (AreAdjacent({y, x, z}, {y, x - 1, z}) && AreAdjacent({y, x - 1, z}, {y - 1, x - 1, z}) && AreAdjacent({y - 1, x - 1, z}, {y - 1, x, z}))
+                if (AreAdjacent({y, x, z}, {y, x - 1, z}) && AreAdjacent({y, x - 1, z}, {y + 1, x - 1, z}) && AreAdjacent({y + 1, x - 1, z}, {y + 1, x, z}))
                 {
                   std::cout << " ";
                   std::cout << "   ";
@@ -502,7 +502,7 @@ void graph::PrintMaze()
         }
         if (i == 0)
         {
-          if (GetNode({y, max_x, z}) != -1 || GetNode({y - 1, max_x, z}) != -1)
+          if (GetNode({y, max_x, z}) != -1 || GetNode({y + 1, max_x, z}) != -1)
             std::cout << "+\n";
           else
             std::cout << "\n";
@@ -518,9 +518,9 @@ void graph::PrintMaze()
     }
     for (int8_t x = min_x; x <= max_x; x++)
     {
-      if (GetNode({max_y, x, z}) == -1)
+      if (GetNode({min_y, x, z}) == -1)
       {
-        if (GetNode({max_y, x - 1, z}) == -1)
+        if (GetNode({min_y, x - 1, z}) == -1)
         {
           std::cout << "    ";
         }
@@ -534,7 +534,7 @@ void graph::PrintMaze()
         std::cout << "+---";
       }
     }
-    if (GetNode({max_y, max_x, z}) != -1)
+    if (GetNode({min_y, max_x, z}) != -1)
       std::cout << "+\n";
     else
       std::cout << "\n";
@@ -783,7 +783,7 @@ void graph::PrintMazePath(std::vector<Tile> &path)
         min_y = ordered_nodes.at(i).y;
     }
 
-    for (int8_t y = min_y; y <= max_y; y++)
+    for (int8_t y = max_y; y >= min_y; y--)
     {
       for (int8_t i = 0; i < 3; i++)
       {
@@ -793,7 +793,7 @@ void graph::PrintMazePath(std::vector<Tile> &path)
           {
             if (GetNode({y, x, z}) == -1)
             {
-              if (GetNode({y - 1, x, z}) != -1)
+              if (GetNode({y + 1, x, z}) != -1)
               {
                 std::cout << "+---";
               }
@@ -811,9 +811,9 @@ void graph::PrintMazePath(std::vector<Tile> &path)
             }
             else
             {
-              if (AreAdjacent({y, x, z}, {y - 1, x, z}))
+              if (AreAdjacent({y, x, z}, {y + 1, x, z}))
               {
-                if (AreAdjacent({y, x, z}, {y, x - 1, z}) && AreAdjacent({y, x - 1, z}, {y - 1, x - 1, z}) && AreAdjacent({y - 1, x - 1, z}, {y - 1, x, z}))
+                if (AreAdjacent({y, x, z}, {y, x - 1, z}) && AreAdjacent({y, x - 1, z}, {y + 1, x - 1, z}) && AreAdjacent({y + 1, x - 1, z}, {y + 1, x, z}))
                 {
                   std::cout << " ";
                   std::cout << "   ";
@@ -967,9 +967,9 @@ void graph::PrintMazePath(std::vector<Tile> &path)
     }
     for (int8_t x = min_x; x <= max_x; x++)
     {
-      if (GetNode({max_y, x, z}) == -1)
+      if (GetNode({min_y, x, z}) == -1)
       {
-        if (GetNode({max_y, x - 1, z}) == -1)
+        if (GetNode({min_y, x - 1, z}) == -1)
         {
           std::cout << "    ";
         }
@@ -983,7 +983,7 @@ void graph::PrintMazePath(std::vector<Tile> &path)
         std::cout << "+---";
       }
     }
-    if (GetNode({max_y, max_x, z}) != -1)
+    if (GetNode({min_y, max_x, z}) != -1)
       std::cout << "+\n";
     else
       std::cout << "\n";
